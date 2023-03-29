@@ -7,8 +7,6 @@ import Typography from '@mui/material/Typography'
 import Copyright from '@/components/Copyright'
 import Alert from '@mui/material/Alert'
 import { useState } from 'react'
-import Grid from '@mui/material/Grid'
-import Link from '@mui/material/Link'
 
 export default function Home() {
 
@@ -21,8 +19,12 @@ export default function Home() {
       email: data.get('email'),
       password: data.get('password'),
     }); */
-
-    const response = await fetch('/api/auth/login', {
+    if (data.get('password') !== data.get('password2')) {
+      setMessage("Las contraseñas no coinciden");
+      return;
+    }
+   
+    const response = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -31,11 +33,11 @@ export default function Home() {
       }),
     });
     if (response.ok) {
-      console.log('Logged in');      
+      Router.push('/');     
     } else {
       switch (response.status) {
         case 401:
-          setMessage("Email o contraseña invalidos");
+          setMessage("El Email ya se encuentra registrado");
           break;
         case 500:
           setMessage("Error interno del servidor");
@@ -61,7 +63,6 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <main className={styles.main}>
         <Box
           component="form"
@@ -80,7 +81,7 @@ export default function Home() {
               textAlign: 'center',
             }}
           >
-            Iniciar sesión
+            Registro de usuario
           </Typography>
           <TextField
             required
@@ -89,7 +90,6 @@ export default function Home() {
             label="Email"
             type="text"
             onFocus={inputClick}
-            fullWidth
           />
           <TextField
             required
@@ -98,8 +98,15 @@ export default function Home() {
             label="Contraseña"
             type="password"
             onFocus={inputClick}
-            fullWidth
             autoComplete="current-password"
+          />
+          <TextField
+            required
+            id="password2"
+            name='password2'
+            label="Repetir contraseña"
+            type="password"
+            onFocus={inputClick}
           />
           {message && <Alert severity="error">{message}</Alert>}
           <Button
@@ -107,49 +114,11 @@ export default function Home() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Iniciar sesión
-          </Button>
-          <Grid container sx={{justifyContent: 'space-between'}}>
-            <Grid item sx={{mt: 1}}>
-              <Link href="#" variant="body2">
-                ¿Olvidaste tu contraseña?
-              </Link>
-            </Grid>
-            <Grid item sx={{mt: 1}}>
-              <Link href="/register" variant="body2">
-                ¿No tienes una cuenta? Regístrate
-              </Link>
-            </Grid>
-          </Grid>
-        </Box>
-
-        <Box
-          component="button"
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            '& > :not(style)': { m: 1, minWidth: 300},
-            alignItems: 'center',
-            border: 'none',
-            backgroundColor: 'transparent',
-          }}
-
-        >
-          <Typography component="h1" variant="h6">
-            Pagar factura con DNI / CUIT
-          </Typography>
-          <Button
-              href='https://cajeroenlinea.celtatsas.com.ar'
-              variant="contained"
-              color="success"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Pagar facturas
+              Registrarme
           </Button>
         </Box>
-      
+  
         <Copyright sx={{ mt: 8, mb: 4 }} />
-
       </main>
     </>
   )
