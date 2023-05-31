@@ -5,12 +5,12 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
 import { useEffect, useState } from 'react'
-import { Link } from '@mui/material'
 import Grid from '@mui/material/Grid'
+import Link from '@mui/material/Link'
 import router from 'next/router'
 import Loading from '@/components/loading'
 
-export default function Register() {
+export default function Login() {
 
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -32,26 +32,21 @@ export default function Register() {
       email: data.get('email'),
       password: data.get('password'),
     }); */
-    if (data.get('password') !== data.get('passwordConfirm')) {
-      setMessage("Las contraseñas no coinciden");
-      return;
-    }
-   
-    const response = await fetch('/api/auth/register', {
+
+    const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: data.get('email'),
         password: data.get('password'),
-        passwordConfirm: data.get('passwordConfirm'),
       }),
     });
     if (response.ok) {
-      Router.push('/');     
+      router.push('/');      
     } else {
       switch (response.status) {
         case 401:
-          setMessage("El Email ya se encuentra registrado");
+          setMessage("Email o contraseña invalidos");
           break;
         case 500:
           setMessage("Error interno del servidor");
@@ -69,7 +64,11 @@ export default function Register() {
     setMessage('');
   }
 
-  if (loading) return <Loading />
+  if (loading) {
+    return (
+     <Loading />
+    )
+  }
 
   return (
     <>
@@ -83,7 +82,7 @@ export default function Register() {
             '& > :not(style)': { m: 1, minWidth: 300},
             alignItems: 'center',
           }}
-          validate = "true"
+          validate="true"
           autoComplete="off"
         >
           <Typography component="h1" variant="h5" 
@@ -91,7 +90,7 @@ export default function Register() {
               textAlign: 'center',
             }}
           >
-            Registro de usuario
+            Iniciar sesión
           </Typography>
           <TextField
             required
@@ -99,9 +98,9 @@ export default function Register() {
             name='email'
             label="Email"
             type="text"
-            fullWidth
             onFocus={inputClick}
-            autoComplete="email"
+            fullWidth
+            autoComplete='email'
           />
           <TextField
             required
@@ -109,19 +108,9 @@ export default function Register() {
             name='password'
             label="Contraseña"
             type="password"
-            fullWidth
             onFocus={inputClick}
-            autoComplete="contraseña"
-          />
-          <TextField
-            required
-            id="passwordConfirm"
-            name='passwordConfirm'
-            label="Repetir contraseña"
-            type="password"
             fullWidth
-            onFocus={inputClick}
-            autoComplete="contraseña"
+            autoComplete="password"
           />
           {message && <Alert severity="error">{message}</Alert>}
           <Button
@@ -129,7 +118,7 @@ export default function Register() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Registrarme
+              Iniciar sesión
           </Button>
           <Grid container sx={{justifyContent: 'space-between'}}>
             <Grid item sx={{mt: 1}}>
@@ -138,13 +127,39 @@ export default function Register() {
               </Link>
             </Grid>
             <Grid item sx={{mt: 1}}>
-              <Link href="/" variant="body2">
-                Ya tengo una cuenta
+              <Link href="/register" variant="body2">
+                ¿No tienes una cuenta? Regístrate
               </Link>
             </Grid>
           </Grid>
         </Box>
-  
+
+        <Box
+          component="button"
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            '& > :not(style)': { m: 1, minWidth: 300},
+            alignItems: 'center',
+            border: 'none',
+            backgroundColor: 'transparent',
+            marginTop: 2,
+          }}
+
+        >
+          <Typography component="h1" variant="h6">
+            Pagar factura con DNI / CUIT
+          </Typography>
+          <Button
+              href='https://cajeroenlinea.celtatsas.com.ar'
+              variant="contained"
+              color="success"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Pagar facturas
+          </Button>
+        </Box>
+        
       </main>
     </>
   )

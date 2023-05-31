@@ -1,54 +1,35 @@
-import connection from "@/models/database";
-import bcryptjs from "bcryptjs";
+import db from "@/models/database";
+import bcrypt from "bcryptjs";
 
-function register(req, res) {
-  const { email, password } = req.body;
+export default async function register (req, res) { 
 
-  if (!email || !password) {
-    res.status(400).json({
-      error: "Missing email or password",
+  try {
+    const { email, password, passwordConfirm } = req.body;
+
+    // 1) Verificar que no exista el usuario
+    const rows = await db.query('SELECT email FROM users WHERE email = ?', [email]);
+    if (rows.length > 0) {
+        return res.status(400).json({ message: 'El usuario ya existe' });
+    }
+    // 2) Verificar que las contraseñas sean iguales
+    if (password !== passwordConfirm) {
+        return res.status(400).json({ message: 'Las contraseñas no coinciden' });
+    }
+
+    // 3) Encriptar la contraseña
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    // 4) Guardar el usuario en la base de datos
+    await db.query('INSERT INTO users SET ?', {
+        email,
+        password: passwordHash
     });
-    return;
+
+    res.status(201).json({ message: 'Usuario creado correctamente' });
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Hubo un error' });
   }
 
-  connection.query(
-    "SELECT * FROM users WHERE email = ?",
-    [email],
-    (error, results) => {
-      if (error) {
-        res.status(500).json({ error });
-        return;
-      }
-
-      if (results.length > 0) {
-        res.status(401).json({
-          error: "Email already exists",
-        });
-        return;
-      }
-
-      const salt = bcryptjs.genSaltSync(10);
-      const hash = bcryptjs.hashSync(password, salt);
-
-      connection.query(
-        "INSERT INTO users (email, password) VALUES (?, ?)",
-        [email, hash],
-        (error, results) => {
-          if (error) {
-            res.status(500).json({ error });
-            return;
-          }
-
-          res.status(200).json({
-            user: {
-              id: results.insertId,
-              email,
-            },
-          });
-        }
-      );
-    }
-  );
 }
-
-export default register;

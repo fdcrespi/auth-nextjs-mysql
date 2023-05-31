@@ -1,0 +1,185 @@
+swagger: "2.0"
+info:
+  title: API de Usuarios y Suministros
+  description: API para gestionar usuarios y suministros
+  version: "1.0"
+
+paths:
+  /users:
+    get:
+      tags:
+        - Usuarios
+      summary: Obtener todos los usuarios
+      responses:
+        200:
+          description: Lista de usuarios obtenida correctamente
+
+    post:
+      tags:
+        - Usuarios
+      summary: Crear un nuevo usuario
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+              id_role:
+                type: integer
+      responses:
+        201:
+          description: Usuario creado correctamente
+
+  /users/{id}:
+    get:
+      tags:
+        - Usuarios
+      summary: Obtener un usuario por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Usuario obtenido correctamente
+
+    put:
+      tags:
+        - Usuarios
+      summary: Actualizar un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+              id_role:
+                type: integer
+      responses:
+        200:
+          description: Usuario actualizado correctamente
+
+    delete:
+      tags:
+        - Usuarios
+      summary: Eliminar un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        204:
+          description: Usuario eliminado correctamente
+
+  /users/{id}/supplies:
+    get:
+      tags:
+        - Suministros
+      summary: Obtener suministros de un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Lista de suministros obtenida correctamente
+
+    post:
+      tags:
+        - Suministros
+      summary: Crear un nuevo suministro para un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              is_envio:
+                type: boolean
+              suministro:
+                type: string
+      responses:
+        201:
+          description: Suministro creado correctamente
+
+  /users/{id}/supplies/{suppliesId}:
+    get:
+      tags:
+        - Suministros
+      summary: Obtener un suministro por ID para un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+        - name: suppliesId
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Suministro obtenido correctamente
+
+    put:
+      tags:
+        - Suministros
+      summary: Actualizar un suministro de un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+        - name: suppliesId
+          in: path
+          required: true
+          type: integer
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              is_envio:
+                type: boolean
+              suministro:
+                type: string
+      responses:
+        200:
+          description: Suministro actualizado correctamente
+
+    delete:
+      tags:
+        - Suministros
+      summary: Eliminar un suministro de un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+        - name: suppliesId
+          in: path
+          required: true
+          type: integer
+      responses:
+        204:
+          description: Suministro eliminado correctamente
+
+
